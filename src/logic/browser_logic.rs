@@ -1,9 +1,9 @@
 use leptos::leptos_dom::logging::console_log;
 use web_sys::{CanvasRenderingContext2d, wasm_bindgen::JsValue};
 
-use crate::model::Vector2d;
+use crate::model::{Vector2d, Planet};
 
-use super::OrbitDrawer;
+use super::{OrbitDrawer, PlanetDrawer};
 
 pub struct BroweserCanvas(pub CanvasRenderingContext2d);
 
@@ -12,12 +12,12 @@ impl OrbitDrawer for BroweserCanvas {
         &self,
         state: &crate::model::OrbitTimeSnapshot,
         center_offset: Vector2d<f64>,
-        canvas_width: f64,
-        canvas_height: f64
+        canvas_rect_size: f64,
+        max_orbit: f64
     ) {
         let eccentricity_2 = state.orbit.e.clone() * state.orbit.e.clone();
         let eccentricity = eccentricity_2.sqrt();
-        let radius_x = canvas_width * 0.4;
+        let radius_x = canvas_rect_size * 0.5 * (state.orbit.a / max_orbit); // scaling to max orbit
         let ratio = radius_x / state.orbit.a;
         let radius_y = state.orbit.a * (1_f64 - eccentricity_2).sqrt() * ratio;
         let Vector2d { x, y } = center_offset;
@@ -59,6 +59,16 @@ impl OrbitDrawer for BroweserCanvas {
         self.0
             .ellipse(x, y, radius_x, radius_y, pi * 2.0 - rotation, state.true_anomaly - arc_length_half, state.true_anomaly + arc_length_half)
             .unwrap();
+        self.0.stroke();
+    }
+}
+
+impl PlanetDrawer for BroweserCanvas {
+    fn draw_planet(&self, planet: &Planet, center_offset: Vector2d<f64>, canvas_rect_size: f64, max_orbit: f64) {
+        let draw_radius = canvas_rect_size * (planet.radius / max_orbit);
+        self.0.begin_path();
+        self.0.set_fill_style(&JsValue::from_str(planet.display_color));
+        self.0.arc(center_offset.x, center_offset.y, draw_radius, 0.0, std::f64::consts::PI).unwrap();
         self.0.stroke();
     }
 }

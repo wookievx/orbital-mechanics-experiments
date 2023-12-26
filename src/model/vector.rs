@@ -6,6 +6,12 @@ pub struct Vector2d<T> {
     pub y: T,
 }
 
+impl <T> Vector2d<T> {
+    pub fn new(x: T, y: T) -> Self {
+        Vector2d { x, y }
+    }
+}
+
 impl<T> ops::Add<Vector2d<T>> for Vector2d<T>
 where
     T: ops::Add<T, Output = T>,

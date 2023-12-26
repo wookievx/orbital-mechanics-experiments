@@ -14,7 +14,7 @@ fn App() -> impl IntoView {
     view! {
         <key_value::DbCompontent></key_value::DbCompontent>
         <p></p>
-        <draw_place::DrawTable></draw_place::DrawTable>
+        <draw_place::DrawOrbit></draw_place::DrawOrbit>
     }
 }
 
